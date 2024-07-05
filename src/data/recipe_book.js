@@ -1,4 +1,4 @@
-{
+const recipeBook = {
   "drink": [
     {
       "id": "masala-chai",
@@ -618,3 +618,5 @@
     }
   ]
 }
+
+export default recipeBook;

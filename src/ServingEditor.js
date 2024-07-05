@@ -1,141 +1,102 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Button, IconButton, Box, TextField, Input } from "@material-ui/core";
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
-import { withStyles } from "@material-ui/core/styles";
+import React, { useState, useEffect } from "react";
+import { IconButton, TextField } from "@material-ui/core";
+import {createTheme, MuiThemeProvider, makeStyles} from "@material-ui/core/styles";
 
-const styles = {
+const useStyles = makeStyles((theme) => ({
   root: {
-    //background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
     border: 0,
     borderRadius: 3,
-    //boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
     color: "#595959",
     height: 48,
     width: "100%",
-    // padding: "0 30px",
-    //alignItems: "center",
     textAlign: "center",
   },
   inputCenter: {
     textAlign: "center",
-    color: "red",
+    color: "black",
   },
-};
+}));
 
-class ServingEditor extends Component {
-  constructor(props) {
-    super(props);
-    var selected_menu = { ...this.props.selected_menu };
-    const category = this.props.category;
-    const id = this.props.id;
+const theme = createTheme({
+  palette: {
+    primary: {
+      light: "#757ce8",
+      main: "#3f50b5",
+      dark: "#002884",
+      contrastText: "#fff",
+    },
+    secondary: {
+      light: "#ff7961",
+      main: "#E50914",
+      dark: "#ba000d",
+      contrastText: "#fff",
+    },
+  },
+});
+
+const ServingEditor = ({ category, id, onInputChange, selected_menu }) => {
+  const classes = useStyles();
+  const [serving, setServing] = useState(0);
+
+  useEffect(() => {
     const cat_array = selected_menu[category];
-    let serving = 0;
+    let initialServing = 0;
     cat_array.forEach((dish) => {
       if (dish.hasOwnProperty(id)) {
-        serving = dish[id];
+        initialServing = dish[id];
       }
     });
-    this.state = {
-      serving: serving,
-    };
-  }
+    setServing(initialServing);
+  }, [category, id, selected_menu]);
 
-  render() {
-    const { category, id } = this.props;
-    const onInputChange = (e) => {
-      this.setState({
-        serving: e.target.value,
-      });
-      this.props.onInputChange(this, category, id, e.target.value);
-    };
+  const handleInputChange = (e) => {
+    const value = parseInt(e.target.value, 10) || 0;
+    setServing(value);
+    onInputChange(category, id, value);
+  };
 
-    const onAddClick = (e) => {
-      this.setState({
-        serving: parseInt(this.state.serving) + 1,
-      });
-
-      this.props.onInputChange(
-        this,
-        category,
-        id,
-        parseInt(this.state.serving) + 1
-      );
-    };
-
-    const onRemoveClick = () => {
-      if (this.state.serving > 0) {
-        this.setState({
-          serving: this.state.serving - 1,
-        });
-        this.props.onInputChange(this, category, id, this.state.serving - 1);
-      }
-    };
-    const theme = createMuiTheme({
-      palette: {
-        primary: {
-          light: "#757ce8", //#6b6b6b
-          main: "#3f50b5", //#595959
-          dark: "#002884", //#404040
-          contrastText: "#fff",
-        },
-        secondary: {
-          light: "#ff7961",
-          main: "#E50914",
-          dark: "#ba000d",
-          contrastText: "#fff",
-        },
-      },
+  const handleAddClick = () => {
+    setServing((prevServing) => {
+      const newServing = prevServing + 1
+      onInputChange(category, id, newServing);
+      return newServing;
     });
+  };
 
-    const { classes } = this.props;
-    return (
-      <div style={{ textAlign: "center" }}>
-        <div style={{ position: "relative", display: "inline-block" }}>
-          <MuiThemeProvider theme={theme}>
-            <IconButton
-              onClick={(e) => onAddClick(e)}
-              variant="outlined"
-              color="secondary"
-              size="medium"
-            >
-              +
-            </IconButton>
-          </MuiThemeProvider>
+  const handleRemoveClick = () => {
+    setServing((prevServing) => {
+      const newServing = prevServing > 0 ? prevServing - 1 : 0;
+      onInputChange(category, id, newServing);
+      return newServing;
+    });
+  };
+
+  return (
+    <div style={{ textAlign: "center" }}>
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <MuiThemeProvider theme={theme}>
+          <IconButton onClick={handleRemoveClick} color="secondary" size="medium">
+            −
+          </IconButton>
           <TextField
             InputProps={{
-              className: classes.input,
+              classes: {
+                input: classes.inputCenter,
+              },
             }}
             className={classes.root}
-            value={this.state.serving}
-            onChange={(e) => onInputChange(e)}
+            value={serving}
+            onChange={handleInputChange}
             variant="outlined"
-            classes={{
-              input: classes.inputCenter,
-            }}
           />
-          <MuiThemeProvider theme={theme}>
-            <IconButton
-              onClick={(e) => onRemoveClick(e)}
-              variant="outlined"
-              color="secondary"
-              size="medium"
-            >
-              −
-            </IconButton>
-          </MuiThemeProvider>
-        </div>
+          <IconButton onClick={handleAddClick} color="secondary" size="medium">
+            +
+          </IconButton>
+        </MuiThemeProvider>
       </div>
-    );
-  }
-}
-
-ServingEditor.propTypes = {
-  category: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  onInputChange: PropTypes.func.isRequired,
-  selected_menu: PropTypes.object.isRequired,
-  classes: PropTypes.object.isRequired,
+    </div>
+  );
 };
 
-export default withStyles(styles)(ServingEditor);
+export default ServingEditor;
+

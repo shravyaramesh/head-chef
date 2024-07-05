@@ -1,21 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 import "./App.css";
 
-class Error extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      serving: 0,
-    };
-  }
+export default function Error () {
 
-  render() {
-    return (
-      <div>
-        <h1>Error!</h1>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <h1>Error!</h1>
+    </div>
+  );
 }
 
-export default Error;

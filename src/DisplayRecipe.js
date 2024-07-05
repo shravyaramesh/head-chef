@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import HomeButton from "./HomeButton";
-import recipe_book from "./data/recipe_book.json";
+import {recipeBook} from "./data/index";
 var images = require.context("./images", true);
 
 class DisplayRecipe extends Component {
@@ -26,7 +26,7 @@ class DisplayRecipe extends Component {
     this.getRecipe(category, id);
   }
   getRecipe = (s_category, s_id) => {
-    const recipe_list = recipe_book[s_category];
+    const recipe_list = recipeBook[s_category];
     for (var i = 0; i < recipe_list.length; i++) {
       if (recipe_list[i]["id"] === s_id) {
         const r_serving = recipe_list[i]["serving"];
